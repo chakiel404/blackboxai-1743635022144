@@ -1,286 +1,315 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartApp API Documentation</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .endpoint {
-            border-left: 4px solid #007bff;
-            margin-bottom: 20px;
-            padding-left: 15px;
-        }
-        .method {
-            font-weight: bold;
-            padding: 3px 8px;
-            border-radius: 4px;
-            margin-right: 10px;
-        }
-        .get { background-color: #61affe; color: white; }
-        .post { background-color: #49cc90; color: white; }
-        .put { background-color: #fca130; color: white; }
-        .delete { background-color: #f93e3e; color: white; }
-        pre {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 4px;
-        }
-        .nav-link.active {
-            background-color: #007bff !important;
-            color: white !important;
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#">SmartApp API</a>
-        </div>
-    </nav>
+<?php
+/**
+ * CodeIgniter
+ *
+ * An open source application development framework for PHP
+ *
+ * This content is released under the MIT License (MIT)
+ *
+ * Copyright (c) 2014 - 2019, British Columbia Institute of Technology
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @package	CodeIgniter
+ * @author	EllisLab Dev Team
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2019, British Columbia Institute of Technology (https://bcit.ca/)
+ * @license	https://opensource.org/licenses/MIT	MIT License
+ * @link	https://codeigniter.com
+ * @since	Version 1.0.0
+ * @filesource
+ */
 
-    <div class="container my-5">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="list-group" id="list-tab" role="tablist">
-                    <a class="list-group-item list-group-item-action active" href="#authentication">Authentication</a>
-                    <a class="list-group-item list-group-item-action" href="#subjects">Subjects</a>
-                    <a class="list-group-item list-group-item-action" href="#materials">Materials</a>
-                    <a class="list-group-item list-group-item-action" href="#quizzes">Quizzes</a>
-                    <a class="list-group-item list-group-item-action" href="#assignments">Assignments</a>
-                </div>
-            </div>
+/*
+ *---------------------------------------------------------------
+ * APPLICATION ENVIRONMENT
+ *---------------------------------------------------------------
+ *
+ * You can load different configurations depending on your
+ * current environment. Setting the environment also influences
+ * things like logging and error reporting.
+ *
+ * This can be set to anything, but default usage is:
+ *
+ *     development
+ *     testing
+ *     production
+ *
+ * NOTE: If you change these, also change the error_reporting() code below
+ */
+	define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
 
-            <div class="col-md-9">
-                <h1>API Documentation</h1>
-                <p class="lead">Welcome to the SmartApp API documentation. This API provides endpoints for managing educational content including subjects, materials, quizzes, and assignments.</p>
+/*
+ *---------------------------------------------------------------
+ * ERROR REPORTING
+ *---------------------------------------------------------------
+ *
+ * Different environments will require different levels of error reporting.
+ * By default development will show errors but testing and live will hide them.
+ */
+switch (ENVIRONMENT)
+{
+	case 'development':
+		error_reporting(-1);
+		ini_set('display_errors', 1);
+	break;
 
-                <div class="alert alert-info">
-                    <strong>Base URL:</strong> <code><?php echo $_SERVER['HTTP_HOST']; ?>/api</code>
-                </div>
+	case 'testing':
+	case 'production':
+		ini_set('display_errors', 0);
+		if (version_compare(PHP_VERSION, '5.3', '>='))
+		{
+			error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);
+		}
+		else
+		{
+			error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_USER_NOTICE);
+		}
+	break;
 
-                <section id="authentication" class="mb-5">
-                    <h2>Authentication</h2>
-                    <p>All API requests require authentication using JWT tokens. Include the token in the Authorization header:</p>
-                    <pre>Authorization: Bearer your-token-here</pre>
+	default:
+		header('HTTP/1.1 503 Service Unavailable.', TRUE, 503);
+		echo 'The application environment is not set correctly.';
+		exit(1); // EXIT_ERROR
+}
 
-                    <div class="endpoint">
-                        <h4><span class="method post">POST</span>/auth/login</h4>
-                        <p>Authenticate user and get access token.</p>
-                        <strong>Request Body:</strong>
-                        <pre>{
-    "email": "user@example.com",
-    "password": "password123"
-}</pre>
-                    </div>
+/*
+ *---------------------------------------------------------------
+ * SYSTEM DIRECTORY NAME
+ *---------------------------------------------------------------
+ *
+ * This variable must contain the name of your "system" directory.
+ * Set the path if it is not in the same directory as this file.
+ */
+	$system_path = 'system';
 
-                    <div class="endpoint">
-                        <h4><span class="method post">POST</span>/auth/register</h4>
-                        <p>Register a new user account.</p>
-                        <strong>Request Body:</strong>
-                        <pre>{
-    "full_name": "John Doe",
-    "email": "john@example.com",
-    "password": "password123",
-    "role": "siswa|guru|admin"
-}</pre>
-                    </div>
-                </section>
+/*
+ *---------------------------------------------------------------
+ * APPLICATION DIRECTORY NAME
+ *---------------------------------------------------------------
+ *
+ * If you want this front controller to use a different "application"
+ * directory than the default one you can set its name here. The directory
+ * can also be renamed or relocated anywhere on your server. If you do,
+ * use an absolute (full) server path.
+ * For more info please see the user guide:
+ *
+ * https://codeigniter.com/userguide3/general/managing_apps.html
+ *
+ * NO TRAILING SLASH!
+ */
+	$application_folder = 'application';
 
-                <section id="subjects" class="mb-5">
-                    <h2>Subjects</h2>
-                    <div class="endpoint">
-                        <h4><span class="method get">GET</span>/subjects</h4>
-                        <p>Get list of all subjects.</p>
-                    </div>
+/*
+ *---------------------------------------------------------------
+ * VIEW DIRECTORY NAME
+ *---------------------------------------------------------------
+ *
+ * If you want to move the view directory out of the application
+ * directory, set the path to it here. The directory can be renamed
+ * and relocated anywhere on your server. If blank, it will default
+ * to the standard location inside your application directory.
+ * If you do move this, use an absolute (full) server path.
+ *
+ * NO TRAILING SLASH!
+ */
+	$view_folder = '';
 
-                    <div class="endpoint">
-                        <h4><span class="method get">GET</span>/subjects/{id}</h4>
-                        <p>Get detailed information about a specific subject.</p>
-                    </div>
 
-                    <div class="endpoint">
-                        <h4><span class="method post">POST</span>/subjects</h4>
-                        <p>Create a new subject (Admin only).</p>
-                        <strong>Request Body:</strong>
-                        <pre>{
-    "name": "Mathematics",
-    "description": "Advanced mathematics course"
-}</pre>
-                    </div>
+/*
+ * --------------------------------------------------------------------
+ * DEFAULT CONTROLLER
+ * --------------------------------------------------------------------
+ *
+ * Normally you will set your default controller in the routes.php file.
+ * You can, however, force a custom routing by hard-coding a
+ * specific controller class/function here. For most applications, you
+ * WILL NOT set your routing here, but it's an option for those
+ * special instances where you might want to override the standard
+ * routing in a specific front controller that shares a common CI installation.
+ *
+ * IMPORTANT: If you set the routing here, NO OTHER controller will be
+ * callable. In essence, this preference limits your application to ONE
+ * specific controller. Leave the function name blank if you need
+ * to call functions dynamically via the URI.
+ *
+ * Un-comment the $routing array below to use this feature
+ */
+	// The directory name, relative to the "controllers" directory.  Leave blank
+	// if your controller is not in a sub-directory within the "controllers" one
+	// $routing['directory'] = '';
 
-                    <div class="endpoint">
-                        <h4><span class="method put">PUT</span>/subjects/{id}</h4>
-                        <p>Update an existing subject (Admin only).</p>
-                    </div>
+	// The controller class file name.  Example:  mycontroller
+	// $routing['controller'] = '';
 
-                    <div class="endpoint">
-                        <h4><span class="method delete">DELETE</span>/subjects/{id}</h4>
-                        <p>Delete a subject (Admin only).</p>
-                    </div>
-                </section>
+	// The controller function you wish to be called.
+	// $routing['function']	= '';
 
-                <section id="materials" class="mb-5">
-                    <h2>Materials</h2>
-                    <div class="endpoint">
-                        <h4><span class="method get">GET</span>/materials</h4>
-                        <p>Get list of all learning materials.</p>
-                    </div>
 
-                    <div class="endpoint">
-                        <h4><span class="method get">GET</span>/materials/{id}</h4>
-                        <p>Get detailed information about a specific material.</p>
-                    </div>
+/*
+ * -------------------------------------------------------------------
+ *  CUSTOM CONFIG VALUES
+ * -------------------------------------------------------------------
+ *
+ * The $assign_to_config array below will be passed dynamically to the
+ * config class when initialized. This allows you to set custom config
+ * items or override any default config values found in the config.php file.
+ * This can be handy as it permits you to share one application between
+ * multiple front controller files, with each file containing different
+ * config values.
+ *
+ * Un-comment the $assign_to_config array below to use this feature
+ */
+	// $assign_to_config['name_of_config_item'] = 'value of config item';
 
-                    <div class="endpoint">
-                        <h4><span class="method post">POST</span>/materials</h4>
-                        <p>Upload a new learning material (Teacher/Admin only).</p>
-                        <strong>Request Body (multipart/form-data):</strong>
-                        <pre>title: "Chapter 1: Introduction"
-description: "Introduction to the course"
-subject_id: 1
-file: [FILE]</pre>
-                    </div>
 
-                    <div class="endpoint">
-                        <h4><span class="method delete">DELETE</span>/materials/{id}</h4>
-                        <p>Delete a learning material (Teacher/Admin only).</p>
-                    </div>
-                </section>
 
-                <section id="quizzes" class="mb-5">
-                    <h2>Quizzes</h2>
-                    <div class="endpoint">
-                        <h4><span class="method get">GET</span>/quizzes</h4>
-                        <p>Get list of all quizzes.</p>
-                    </div>
+// --------------------------------------------------------------------
+// END OF USER CONFIGURABLE SETTINGS.  DO NOT EDIT BELOW THIS LINE
+// --------------------------------------------------------------------
 
-                    <div class="endpoint">
-                        <h4><span class="method get">GET</span>/quizzes/{id}</h4>
-                        <p>Get detailed information about a specific quiz.</p>
-                    </div>
+/*
+ * ---------------------------------------------------------------
+ *  Resolve the system path for increased reliability
+ * ---------------------------------------------------------------
+ */
 
-                    <div class="endpoint">
-                        <h4><span class="method post">POST</span>/quizzes</h4>
-                        <p>Create a new quiz (Teacher/Admin only).</p>
-                        <strong>Request Body:</strong>
-                        <pre>{
-    "title": "Chapter 1 Quiz",
-    "description": "Test your knowledge",
-    "subject_id": 1,
-    "duration_minutes": 60,
-    "questions": [
-        {
-            "text": "What is 2+2?",
-            "type": "multiple_choice",
-            "options": ["3", "4", "5", "6"],
-            "correct_answer": "4",
-            "points": 1
-        }
-    ]
-}</pre>
-                    </div>
+	// Set the current directory correctly for CLI requests
+	if (defined('STDIN'))
+	{
+		chdir(dirname(__FILE__));
+	}
 
-                    <div class="endpoint">
-                        <h4><span class="method post">POST</span>/quizzes/{id}/submit</h4>
-                        <p>Submit answers for a quiz (Student only).</p>
-                        <strong>Request Body:</strong>
-                        <pre>{
-    "answers": {
-        "1": "4",
-        "2": "True"
-    },
-    "start_time": "2023-01-01 10:00:00"
-}</pre>
-                    </div>
-                </section>
+	if (($_temp = realpath($system_path)) !== FALSE)
+	{
+		$system_path = $_temp.DIRECTORY_SEPARATOR;
+	}
+	else
+	{
+		// Ensure there's a trailing slash
+		$system_path = strtr(
+			rtrim($system_path, '/\\'),
+			'/\\',
+			DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR
+		).DIRECTORY_SEPARATOR;
+	}
 
-                <section id="assignments" class="mb-5">
-                    <h2>Assignments</h2>
-                    <div class="endpoint">
-                        <h4><span class="method get">GET</span>/assignments</h4>
-                        <p>Get list of all assignments.</p>
-                    </div>
+	// Is the system path correct?
+	if ( ! is_dir($system_path))
+	{
+		header('HTTP/1.1 503 Service Unavailable.', TRUE, 503);
+		echo 'Your system folder path does not appear to be set correctly. Please open the following file and correct this: '.pathinfo(__FILE__, PATHINFO_BASENAME);
+		exit(3); // EXIT_CONFIG
+	}
 
-                    <div class="endpoint">
-                        <h4><span class="method get">GET</span>/assignments/{id}</h4>
-                        <p>Get detailed information about a specific assignment.</p>
-                    </div>
+/*
+ * -------------------------------------------------------------------
+ *  Now that we know the path, set the main path constants
+ * -------------------------------------------------------------------
+ */
+	// The name of THIS file
+	define('SELF', pathinfo(__FILE__, PATHINFO_BASENAME));
 
-                    <div class="endpoint">
-                        <h4><span class="method post">POST</span>/assignments</h4>
-                        <p>Create a new assignment (Teacher/Admin only).</p>
-                        <strong>Request Body (multipart/form-data):</strong>
-                        <pre>title: "Assignment 1"
-description: "Complete the exercises"
-subject_id: 1
-due_date: "2023-12-31 23:59:59"
-file: [FILE]</pre>
-                    </div>
+	// Path to the system directory
+	define('BASEPATH', $system_path);
 
-                    <div class="endpoint">
-                        <h4><span class="method post">POST</span>/assignments/{id}/submit</h4>
-                        <p>Submit work for an assignment (Student only).</p>
-                        <strong>Request Body (multipart/form-data):</strong>
-                        <pre>file: [FILE]</pre>
-                    </div>
+	// Path to the front controller (this file) directory
+	define('FCPATH', dirname(__FILE__).DIRECTORY_SEPARATOR);
 
-                    <div class="endpoint">
-                        <h4><span class="method put">PUT</span>/assignments/{id}/grade</h4>
-                        <p>Grade a submitted assignment (Teacher/Admin only).</p>
-                        <strong>Request Body:</strong>
-                        <pre>{
-    "grade": 85,
-    "feedback": "Good work!"
-}</pre>
-                    </div>
-                </section>
-            </div>
-        </div>
-    </div>
+	// Name of the "system" directory
+	define('SYSDIR', basename(BASEPATH));
 
-    <footer class="bg-light py-3 mt-5">
-        <div class="container text-center">
-            <p class="mb-0">SmartApp API Documentation &copy; <?php echo date('Y'); ?></p>
-        </div>
-    </footer>
+	// The path to the "application" directory
+	if (is_dir($application_folder))
+	{
+		if (($_temp = realpath($application_folder)) !== FALSE)
+		{
+			$application_folder = $_temp;
+		}
+		else
+		{
+			$application_folder = strtr(
+				rtrim($application_folder, '/\\'),
+				'/\\',
+				DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR
+			);
+		}
+	}
+	elseif (is_dir(BASEPATH.$application_folder.DIRECTORY_SEPARATOR))
+	{
+		$application_folder = BASEPATH.strtr(
+			trim($application_folder, '/\\'),
+			'/\\',
+			DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR
+		);
+	}
+	else
+	{
+		header('HTTP/1.1 503 Service Unavailable.', TRUE, 503);
+		echo 'Your application folder path does not appear to be set correctly. Please open the following file and correct this: '.SELF;
+		exit(3); // EXIT_CONFIG
+	}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Smooth scroll to sections
-        document.querySelectorAll('.list-group-item').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const section = document.querySelector(this.getAttribute('href'));
-                section.scrollIntoView({ behavior: 'smooth' });
-                
-                // Update active state
-                document.querySelectorAll('.list-group-item').forEach(item => {
-                    item.classList.remove('active');
-                });
-                this.classList.add('active');
-            });
-        });
+	define('APPPATH', $application_folder.DIRECTORY_SEPARATOR);
 
-        // Update active menu item on scroll
-        window.addEventListener('scroll', function() {
-            const sections = document.querySelectorAll('section');
-            let current = '';
+	// The path to the "views" directory
+	if ( ! isset($view_folder[0]) && is_dir(APPPATH.'views'.DIRECTORY_SEPARATOR))
+	{
+		$view_folder = APPPATH.'views';
+	}
+	elseif (is_dir($view_folder))
+	{
+		if (($_temp = realpath($view_folder)) !== FALSE)
+		{
+			$view_folder = $_temp;
+		}
+		else
+		{
+			$view_folder = strtr(
+				rtrim($view_folder, '/\\'),
+				'/\\',
+				DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR
+			);
+		}
+	}
+	elseif (is_dir(APPPATH.$view_folder.DIRECTORY_SEPARATOR))
+	{
+		$view_folder = APPPATH.strtr(
+			trim($view_folder, '/\\'),
+			'/\\',
+			DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR
+		);
+	}
+	else
+	{
+		header('HTTP/1.1 503 Service Unavailable.', TRUE, 503);
+		echo 'Your view folder path does not appear to be set correctly. Please open the following file and correct this: '.SELF;
+		exit(3); // EXIT_CONFIG
+	}
 
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                if (pageYOffset >= sectionTop - 60) {
-                    current = section.getAttribute('id');
-                }
-            });
+	define('VIEWPATH', $view_folder.DIRECTORY_SEPARATOR);
 
-            document.querySelectorAll('.list-group-item').forEach(item => {
-                item.classList.remove('active');
-                if (item.getAttribute('href').substring(1) === current) {
-                    item.classList.add('active');
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+/*
+ * --------------------------------------------------------------------
+ * LOAD THE BOOTSTRAP FILE
+ * --------------------------------------------------------------------
+ *
+ * And away we go...
+ */
+require_once BASEPATH.'core/CodeIgniter.php';
