@@ -1,0 +1,43 @@
+[2025-04-02 23:49:23] Database Connection Error: could not find driver
+[2025-04-03 00:03:25] Query Error: SQLSTATE[HY000]: General error: 1 no such table: users SQL: SELECT user_id, email, password, full_name, role FROM users WHERE email = ?
+[2025-04-03 00:03:25] Login Error: Database query failed
+[2025-04-03 18:35:07] Update Error: SQLSTATE[HY000]: General error: 1 no such column: Array
+[2025-04-03 18:42:49] Query Error: SQLSTATE[HY000]: General error: 1 no such table: schedules SQL: 
+    SELECT s.*, 
+           c.class_name,
+           sub.name as subject_name,
+           u.full_name as teacher_name
+    FROM schedules s
+    JOIN classes c ON s.class_id = c.class_id
+    JOIN subjects sub ON s.subject_id = sub.subject_id
+    JOIN teachers t ON s.teacher_id = t.teacher_id
+    JOIN users u ON t.user_id = u.user_id
+    WHERE s.academic_year = ? AND s.semester = ?
+    ORDER BY s.day, s.start_time
+
+[2025-04-03 18:42:57] Query Error: SQLSTATE[HY000]: General error: 1 no such table: schedules SQL: 
+    SELECT s.*, 
+           c.class_name,
+           sub.name as subject_name,
+           u.full_name as teacher_name
+    FROM schedules s
+    JOIN classes c ON s.class_id = c.class_id
+    JOIN subjects sub ON s.subject_id = sub.subject_id
+    JOIN teachers t ON s.teacher_id = t.teacher_id
+    JOIN users u ON t.user_id = u.user_id
+    WHERE s.academic_year = ? AND s.semester = ?
+    ORDER BY s.day, s.start_time
+
+[2025-04-03 18:56:26] Query Error: SQLSTATE[HY000]: General error: 1 no such table: schedules SQL: 
+    SELECT s.*, 
+           c.class_name,
+           sub.name as subject_name,
+           u.full_name as teacher_name
+    FROM schedules s
+    JOIN classes c ON s.class_id = c.class_id
+    JOIN subjects sub ON s.subject_id = sub.subject_id
+    JOIN teachers t ON s.teacher_id = t.teacher_id
+    JOIN users u ON t.user_id = u.user_id
+    WHERE s.academic_year = ? AND s.semester = ?
+    ORDER BY s.day, s.start_time
+
